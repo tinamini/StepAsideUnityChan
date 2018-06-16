@@ -36,7 +36,7 @@ public class UnityChanController : MonoBehaviour
 	/// <summary>
 	/// ジャンプ力
 	/// </summary>
-	private float upForce = 30.0f;
+	private float upForce = 500f;
 	#endregion
 
 	#region Properties
