@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 
@@ -17,6 +18,16 @@ public class UnityChanController : MonoBehaviour
 	/// Unityちゃん移動用コンポーネント
 	/// </summary>
 	private Rigidbody myRigidbody;
+
+	/// <summary>
+	/// ゲーム終了時に表示するテキスト
+	/// </summary>
+	private GameObject stateText;
+
+	/// <summary>
+	/// スコア表示用テキスト
+	/// </summary>
+	private GameObject scoreText;
 
 	/// <summary>
 	/// 前進力
@@ -47,6 +58,11 @@ public class UnityChanController : MonoBehaviour
 	/// 終了判定
 	/// </summary>
 	private bool isEnd = false;
+
+	/// <summary>
+	/// 得点
+	/// </summary>
+	int score = 0;
 	#endregion
 
 	#region Properties
@@ -69,6 +85,8 @@ public class UnityChanController : MonoBehaviour
 		this.myAnimator = GetComponent<Animator>();
 		this.myAnimator.SetFloat("Speed", 1);
 		this.myRigidbody = GetComponent<Rigidbody>();
+		this.stateText = GameObject.Find("GameResultText");
+		this.scoreText = GameObject.Find("ScoreText");
 	}
 
 	/// <summary>
@@ -115,17 +133,21 @@ public class UnityChanController : MonoBehaviour
 		if (other.gameObject.tag == "CarTag" || other.gameObject.tag == "TrafficConeTag")
 		{
 			this.isEnd = true;
+			this.stateText.GetComponent<Text>().text = "GAME OVER";
 		}
 
 		// ゴール到達時
 		if (other.gameObject.tag == "GoalTag")
 		{
 			this.isEnd = true;
+			this.stateText.GetComponent<Text>().text = "CLEAR!!";
 		}
 
 		// コイン取得
 		if(other.gameObject.tag == "CoinTag")
 		{
+			this.score += 10;
+			this.scoreText.GetComponent<Text>().text = "Score " + this.score + "pts";
 			GetComponent<ParticleSystem>().Play();
 			Destroy(other.gameObject);
 		}
