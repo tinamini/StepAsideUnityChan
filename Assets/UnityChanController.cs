@@ -36,7 +36,17 @@ public class UnityChanController : MonoBehaviour
 	/// <summary>
 	/// ジャンプ力
 	/// </summary>
-	private float upForce = 500f;
+	private float upForce = 600f;
+
+	/// <summary>
+	/// 動作減衰係数
+	/// </summary>
+	private float coefficient = 0.95f;
+
+	/// <summary>
+	/// 終了判定
+	/// </summary>
+	private bool isEnd = false;
 	#endregion
 
 	#region Properties
@@ -66,6 +76,14 @@ public class UnityChanController : MonoBehaviour
 	/// </summary>
 	void Update()
 	{
+		if(this.isEnd)
+		{
+			this.forwardForce *= this.coefficient;
+			this.turnForce *= this.coefficient;
+			this.upForce *= this.coefficient;
+			this.myAnimator.speed *= this.coefficient;
+		}
+
 		// 前進
 		this.myRigidbody.AddForce(this.transform.forward * this.forwardForce);
 
@@ -88,6 +106,28 @@ public class UnityChanController : MonoBehaviour
 		{
 			this.myAnimator.SetBool("Jump", true);
 			this.myRigidbody.AddForce(this.transform.up * this.upForce);
+		}
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		// 障害物衝突時
+		if (other.gameObject.tag == "CarTag" || other.gameObject.tag == "TrafficConeTag")
+		{
+			this.isEnd = true;
+		}
+
+		// ゴール到達時
+		if (other.gameObject.tag == "GoalTag")
+		{
+			this.isEnd = true;
+		}
+
+		// コイン取得
+		if(other.gameObject.tag == "CoinTag")
+		{
+			GetComponent<ParticleSystem>().Play();
+			Destroy(other.gameObject);
 		}
 	}
 	#endregion
