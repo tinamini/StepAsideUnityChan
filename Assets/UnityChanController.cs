@@ -32,12 +32,12 @@ public class UnityChanController : MonoBehaviour
 	/// <summary>
 	/// 前進力
 	/// </summary>
-	private float forwardForce = 300f;
+	private float forwardForce = 800f;
 
 	/// <summary>
 	/// 横の移動力
 	/// </summary>
-	private float turnForce = 300f;
+	private float turnForce = 800f;
 
 	/// <summary>
 	/// 左右の移動可能範囲
