@@ -18,7 +18,7 @@ public class MyCameraController : MonoBehaviour
 	/// </summary>
 	private float difference;
 
-	private Vector3 Position;
+	private Vector3 position;
 	#endregion
 
 	#region Properties
@@ -50,10 +50,10 @@ public class MyCameraController : MonoBehaviour
 	/// </summary>
 	void Update ()
 	{
-		Position.x = 0;
-		Position.y = this.transform.position.y;
-		Position.z = this.unitychan.transform.position.z - difference;
-		this.transform.position = Position;
+		position.x = 0;
+		position.y = this.transform.position.y;
+		position.z = this.unitychan.transform.position.z - difference;
+		this.transform.position = position;
 	}
 	#endregion
 }

@@ -11,7 +11,7 @@ public class ItemDestroyer : MonoBehaviour
 	/// <summary>
 	/// カメラオブジェクト
 	/// </summary>
-	private GameObject camera;
+	private new GameObject camera;
 	#endregion
 
 	#region Properties

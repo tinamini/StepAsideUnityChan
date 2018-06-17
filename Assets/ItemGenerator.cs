@@ -9,11 +9,6 @@ public class ItemGenerator : MonoBehaviour
 {
 	#region Fields
 	/// <summary>
-	/// スタート地点
-	/// </summary>
-	private int startPos = -160;
-
-	/// <summary>
 	/// ゴール地点
 	/// </summary>
 	private int goalPos = 120;
@@ -37,9 +32,50 @@ public class ItemGenerator : MonoBehaviour
 	/// コーンプレハブ
 	/// </summary>
 	public GameObject ConePrefab;
+
+	/// <summary>
+	/// プレイヤープレハブ
+	/// </summary>
+	private GameObject playerPrefab;
+
+	/// <summary>
+	/// レーンの最終位置保存
+	/// </summary>
+	private GameObject prevLanes = null;
+
+	/// <summary>
+	/// 障害物作成最大距離差
+	/// </summary>
+	private readonly float createLimitDistance = 45.0f;
+
+	/// <summary>
+	/// 難易度
+	/// </summary>
+	Difficulty mode;
+
+	/// <summary>
+	/// 難易度と生成頻度のテーブル
+	/// </summary>
+	private Dictionary<Difficulty, int> difficulty = new Dictionary<Difficulty, int>
+	{
+		{Difficulty.Easy,       1},
+		{Difficulty.Normal,     4},
+		{Difficulty.Hard,       7},
+		{Difficulty.Lunatic,    10},
+	};
 	#endregion
 
 	#region Properties
+	#endregion
+
+	#region Enums
+	public enum Difficulty
+	{
+		Easy,
+		Normal,
+		Hard,
+		Lunatic,
+	}
 	#endregion
 
 	#region Methods
@@ -56,41 +92,9 @@ public class ItemGenerator : MonoBehaviour
 	/// </summary>
 	void Start()
 	{
-		// 一定距離ごとにアイテム生成
-		for (int i = startPos; i < goalPos; i += 15)
-		{
-			// 出現アイテム ランダム生成
-			int num = Random.Range(0, 10);
-			if (num <= 1)
-			{
-				for (float j = -1; j <= 1; j += 0.4f)
-				{
-					// コーンをx軸方向に一直線に生成
-					var cone = Instantiate(ConePrefab) as GameObject;
-					cone.transform.position = new Vector3(4 * j, cone.transform.position.y, i);
-				}
-			}
-			else
-			{
-				for (int j = -1; j < 2; j++)
-				{
-					int item = Random.Range(1, 11);     // アイテム種ランダム生成
-					int zOffset = Random.Range(-5, 6);  // アイテム配置位置をZ軸座標のオフセット
-
-					// コイン60% コイン30% 何もなし10%
-					if (1 <= item && item <= 6)
-					{
-						var coin = Instantiate(CoinPrefab) as GameObject;
-						coin.transform.position = new Vector3(xPosRange * j, coin.transform.position.y, i + zOffset);
-					}
-					if (7 <= item && item <= 9)
-					{
-						var car = Instantiate(CarPrefab) as GameObject;
-						car.transform.position = new Vector3(xPosRange * j, car.transform.position.y, i + zOffset);
-					}
-				}
-			}
-		}
+		this.playerPrefab = GameObject.Find("unitychan");
+		this.mode = (Difficulty)Random.Range((int)Difficulty.Easy, (int)Difficulty.Lunatic);
+		Debug.Log(mode.ToString());
 	}
 
 	/// <summary>
@@ -98,7 +102,64 @@ public class ItemGenerator : MonoBehaviour
 	/// </summary>
 	void Update()
 	{
+		var distance = System.Math.Abs(this.goalPos - playerPrefab.transform.position.z);
+		bool isCreate = Random.Range(0, 100) < difficulty[mode] && distance > createLimitDistance
+			? true
+			: false;
 
+		if (isCreate && !playerPrefab.GetComponent<UnityChanController>().IsEnd)
+		{
+			if (Random.Range(0, 20) <= 1)
+			{
+				CreateObstacleLane(ConePrefab);
+			}
+			else
+			{
+				int item = Random.Range(1, 11);     // アイテム種ランダム生成
+				if (1 <= item && item <= 6)
+				{
+					CreateItem(CoinPrefab);
+				}
+				if (7 <= item && item <= 9)
+				{
+					CreateItem(CarPrefab);
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// アイテムレーン作成
+	/// </summary>
+	/// <param name="itemPrefab">アイテムプレハブ</param>
+	private void CreateObstacleLane(GameObject itemPrefab)
+	{
+		var zPosition = playerPrefab.transform.position.z + Random.Range(-5.0f, 5.0f) + createLimitDistance;
+		var laneDistance = this.prevLanes == null
+			? Random.Range(1, 3 * difficulty[mode])
+			: System.Math.Abs(this.prevLanes.transform.position.z - zPosition);
+
+		if (laneDistance > 20.0f / difficulty[mode])
+		{
+			for (float j = -1; j <= 1; j += 0.4f)
+			{
+				// コーンをx軸方向に一直線に生成
+				var cone = Instantiate(itemPrefab) as GameObject;
+				cone.transform.position = new Vector3(4 * j, cone.transform.position.y, zPosition);
+				this.prevLanes = cone;
+			}
+		}
+	}
+
+	/// <summary>
+	/// アイテム作成
+	/// </summary>
+	/// <param name="itemPrefab">アイテムプレハブ</param>
+	private void CreateItem(GameObject itemPrefab)
+	{
+		var obstacle = Instantiate(itemPrefab) as GameObject;
+		var zRandomOffset = playerPrefab.transform.position.z + createLimitDistance + Random.Range(-5.0f, 5.0f);
+		obstacle.transform.position = new Vector3(xPosRange * Random.Range(-1, 2), obstacle.transform.position.y, zRandomOffset);
 	}
 	#endregion
 }

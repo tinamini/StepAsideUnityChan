@@ -76,6 +76,7 @@ public class UnityChanController : MonoBehaviour
 	#endregion
 
 	#region Properties
+	public bool IsEnd { get { return isEnd; } }
 	#endregion
 
 	#region Methods
