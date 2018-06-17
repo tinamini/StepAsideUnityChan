@@ -40,20 +40,6 @@ public class ItemGenerator : MonoBehaviour
 	#endregion
 
 	#region Properties
-	///// <summary>
-	///// 車プレハブ
-	///// </summary>
-	//public GameObject CarPrefab { get; set; }
-
-	///// <summary>
-	///// コインプレハブ
-	///// </summary>
-	//public GameObject CoinPrefab { get; set; }
-
-	///// <summary>
-	///// コーンプレハブ
-	///// </summary>
-	//public GameObject ConePrefab { get; set; }
 	#endregion
 
 	#region Methods
