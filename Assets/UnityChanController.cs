@@ -62,7 +62,17 @@ public class UnityChanController : MonoBehaviour
 	/// <summary>
 	/// 得点
 	/// </summary>
-	int score = 0;
+	private int score = 0;
+
+	/// <summary>
+	/// 左ボタン押下判定
+	/// </summary>
+	private bool isLeftButtonDown = false;
+
+	/// <summary>
+	/// 右ボタン押下判定
+	/// </summary>
+	private bool isRightButtonDown = false;
 	#endregion
 
 	#region Properties
@@ -106,11 +116,11 @@ public class UnityChanController : MonoBehaviour
 		this.myRigidbody.AddForce(this.transform.forward * this.forwardForce);
 
 		// 左右移動
-		if (Input.GetKey(KeyCode.LeftArrow) && -this.movableRange < this.transform.position.x)
+		if ((Input.GetKey(KeyCode.LeftArrow) || this.isLeftButtonDown)&& -this.movableRange < this.transform.position.x)
 		{
 			this.myRigidbody.AddForce(-this.turnForce, 0, 0);
 		}
-		else if (Input.GetKey(KeyCode.RightArrow) && this.transform.position.x < this.movableRange)
+		else if ((Input.GetKey(KeyCode.RightArrow) || this.isRightButtonDown)&& this.transform.position.x < this.movableRange)
 		{
 			this.myRigidbody.AddForce(this.turnForce, 0, 0);
 		}
@@ -151,6 +161,50 @@ public class UnityChanController : MonoBehaviour
 			GetComponent<ParticleSystem>().Play();
 			Destroy(other.gameObject);
 		}
+	}
+
+	/// <summary>
+	/// ジャンプボタン押下
+	/// </summary>
+	public void GetMyJumpButtonDown()
+	{
+		if (this.transform.position.y < 0.5f)
+		{
+			this.myAnimator.SetBool("Jump", true);
+			this.myRigidbody.AddForce(this.transform.up * this.upForce);
+		}
+	}
+
+	/// <summary>
+	/// 左ボタン押下処理
+	/// </summary>
+	public void GetMyLeftButtonDown()
+	{
+		this.isLeftButtonDown = true;
+	}
+
+	/// <summary>
+	/// 左ボタン離上処理
+	/// </summary>
+	public void GetMyLeftButtonUp()
+	{
+		this.isLeftButtonDown = false;
+	}
+
+	/// <summary>
+	/// 右ボタン押下処理
+	/// </summary>
+	public void GetMyRightButtonDown()
+	{
+		this.isRightButtonDown = true;
+	}
+
+	/// <summary>
+	/// 右ボタン離上処理
+	/// </summary>
+	public void GetMyRightButtonUp()
+	{
+		this.isRightButtonDown = false;
 	}
 	#endregion
 }
